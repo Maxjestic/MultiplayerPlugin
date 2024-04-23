@@ -23,32 +23,41 @@ class MULTIPLAYERSESSIONS_API UMenu : public UUserWidget
 public:
 	/** Adds widget to viewport, sets properties */
 	UFUNCTION( BlueprintCallable )
-	void MenuSetup();
-	
+	void MenuSetup( const int32 InNumOfPublicConnections = 4, const FString InMatchType = FString( TEXT( "FreeForAll" ) ) );
+
 protected:
 	//~ Begin UUserWidget Interface
 	virtual bool Initialize() override;
+	virtual void NativeDestruct() override;
 	//~ End UUserWidget Interface
-	
-private:
-	///
-	/// Pointers to buttons in widget used to bind to events
-	///
-	UPROPERTY(meta = (BindWidget))
-	TObjectPtr<UButton> Button_Host;
-	
-	UPROPERTY(meta = (BindWidget))
-	TObjectPtr<UButton> Button_Join;
 
+private:
 	///
 	/// Callbacks to buttons events
 	///
 	UFUNCTION()
 	void HostButtonClicked();
-	
+
 	UFUNCTION()
 	void JoinButtonClicked();
 
+
+	/** Removes widget and takes care of input settings */
+	void MenuTearDown();
+
+	///
+	/// Pointers to buttons in widget used to bind to events
+	///
+	UPROPERTY( meta = (BindWidget) )
+	TObjectPtr<UButton> Button_Host;
+
+	UPROPERTY( meta = (BindWidget) )
+	TObjectPtr<UButton> Button_Join;
+
 	/** Handles online session functionality */
 	TObjectPtr<UMultiplayerSessionsSubsystem> MultiplayerSessionsSubsystem;
+
+	/** Number of maximum player connections when creating an online session */
+	int32 NumPublicConnections = 4;
+	FString MatchType = TEXT( "FreeForAll" );
 };

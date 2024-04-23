@@ -6,8 +6,11 @@
 #include "Components/Button.h"
 #include "MultiplayerSessionsSubsystem.h"
 
-void UMenu::MenuSetup()
+void UMenu::MenuSetup( const int32 InNumOfPublicConnections, const FString InMatchType )
 {
+	NumPublicConnections = InNumOfPublicConnections;
+	MatchType = InMatchType;
+	
 	AddToViewport();
 	SetVisibility( ESlateVisibility::Visible );
 	SetIsFocusable( true );
@@ -24,7 +27,7 @@ void UMenu::MenuSetup()
 		}
 	}
 
-	if(UGameInstance* GameInstance = GetGameInstance())
+	if (UGameInstance* GameInstance = GetGameInstance())
 	{
 		MultiplayerSessionsSubsystem = GameInstance->GetSubsystem<UMultiplayerSessionsSubsystem>();
 	}
@@ -32,22 +35,29 @@ void UMenu::MenuSetup()
 
 bool UMenu::Initialize()
 {
-	if(!Super::Initialize())
+	if (!Super::Initialize())
 	{
 		return false;
 	}
 
-	if(Button_Host)
+	if (Button_Host)
 	{
 		Button_Host->OnClicked.AddDynamic( this, &ThisClass::HostButtonClicked );
 	}
-	
-	if(Button_Join)
+
+	if (Button_Join)
 	{
 		Button_Join->OnClicked.AddDynamic( this, &ThisClass::JoinButtonClicked );
 	}
-	
+
 	return true;
+}
+
+void UMenu::NativeDestruct()
+{
+	MenuTearDown();
+
+	Super::NativeDestruct();
 }
 
 void UMenu::HostButtonClicked()
@@ -57,9 +67,13 @@ void UMenu::HostButtonClicked()
 		GEngine->AddOnScreenDebugMessage( -1, 15.f, FColor::Yellow, FString( TEXT( "Host button clicked" ) ) );
 	}
 
-	if(MultiplayerSessionsSubsystem)
+	if (MultiplayerSessionsSubsystem)
 	{
-		MultiplayerSessionsSubsystem->CreateSession( 4, FString("FreeForAll") );
+		MultiplayerSessionsSubsystem->CreateSession( NumPublicConnections, MatchType );
+		if (UWorld* World = GetWorld())
+		{
+			World->ServerTravel( "/Game/ThirdPerson/Maps/Lobby?listen" );
+		}
 	}
 }
 
@@ -68,5 +82,20 @@ void UMenu::JoinButtonClicked()
 	if (GEngine)
 	{
 		GEngine->AddOnScreenDebugMessage( -1, 15.f, FColor::Yellow, FString( TEXT( "Join button clicked" ) ) );
+	}
+}
+
+void UMenu::MenuTearDown()
+{
+	RemoveFromParent();
+
+	if (const UWorld* World = GetWorld())
+	{
+		if (APlayerController* PlayerController = World->GetFirstPlayerController())
+		{
+			const FInputModeGameOnly InputModeData;
+			PlayerController->SetInputMode( InputModeData );
+			PlayerController->SetShowMouseCursor( false );
+		}
 	}
 }

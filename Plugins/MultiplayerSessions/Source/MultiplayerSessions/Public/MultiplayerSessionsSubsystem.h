@@ -70,6 +70,9 @@ private:
 	/** Used to handle sessions */
 	IOnlineSessionPtr SessionInterface;
 
+	/** Session setting created in recent session creation */
+	TSharedPtr<FOnlineSessionSettings> LastSessionSettings;
+
 	///
 	/// To add to Online Session Interface delegate list.
 	/// We'll bind our MultiplayerSessionSubsystem internal callbacks to these.
