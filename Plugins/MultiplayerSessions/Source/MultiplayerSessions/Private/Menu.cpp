@@ -10,7 +10,7 @@ void UMenu::MenuSetup( const int32 InNumOfPublicConnections, const FString InMat
 {
 	NumPublicConnections = InNumOfPublicConnections;
 	MatchType = InMatchType;
-	
+
 	AddToViewport();
 	SetVisibility( ESlateVisibility::Visible );
 	SetIsFocusable( true );
@@ -27,9 +27,18 @@ void UMenu::MenuSetup( const int32 InNumOfPublicConnections, const FString InMat
 		}
 	}
 
-	if (UGameInstance* GameInstance = GetGameInstance())
+	if (const UGameInstance* GameInstance = GetGameInstance())
 	{
 		MultiplayerSessionsSubsystem = GameInstance->GetSubsystem<UMultiplayerSessionsSubsystem>();
+	}
+
+	if (MultiplayerSessionsSubsystem)
+	{
+		MultiplayerSessionsSubsystem->MultiplayerOnCreateSessionComplete.AddDynamic( this, &ThisClass::OnCreateSession );
+		MultiplayerSessionsSubsystem->MultiplayerOnFindSessionsComplete.AddUObject( this, &ThisClass::OnFindSessions );
+		MultiplayerSessionsSubsystem->MultiplayerOnJoinSessionComplete.AddUObject( this, &ThisClass::OnJoinSession );
+		MultiplayerSessionsSubsystem->MultiplayerOnStartSessionComplete.AddDynamic( this, &ThisClass::OnStartSession );
+		MultiplayerSessionsSubsystem->MultiplayerOnDestroySessionComplete.AddDynamic( this, &ThisClass::OnDestroySession );
 	}
 }
 
@@ -60,20 +69,50 @@ void UMenu::NativeDestruct()
 	Super::NativeDestruct();
 }
 
-void UMenu::HostButtonClicked()
+void UMenu::OnCreateSession( bool bWasSuccessful )
 {
-	if (GEngine)
+	if(bWasSuccessful)
 	{
-		GEngine->AddOnScreenDebugMessage( -1, 15.f, FColor::Yellow, FString( TEXT( "Host button clicked" ) ) );
-	}
-
-	if (MultiplayerSessionsSubsystem)
-	{
-		MultiplayerSessionsSubsystem->CreateSession( NumPublicConnections, MatchType );
+		if (GEngine)
+		{
+			GEngine->AddOnScreenDebugMessage( -1, 15.f, FColor::Yellow, FString( TEXT( "Session created successfully!" ) ) );
+		}
+		
 		if (UWorld* World = GetWorld())
 		{
 			World->ServerTravel( "/Game/ThirdPerson/Maps/Lobby?listen" );
 		}
+	}
+	else
+	{
+		if (GEngine)
+		{
+			GEngine->AddOnScreenDebugMessage( -1, 15.f, FColor::Red, FString( TEXT( "Failed to create session!" ) ) );
+		}
+	}
+}
+
+void UMenu::OnFindSessions( const TArray<FOnlineSessionSearchResult>& SessionResults, bool bWasSuccessful )
+{
+}
+
+void UMenu::OnJoinSession( EOnJoinSessionCompleteResult::Type Result )
+{
+}
+
+void UMenu::OnStartSession( bool bWasSuccessful )
+{
+}
+
+void UMenu::OnDestroySession( bool bWasSuccessful )
+{
+}
+
+void UMenu::HostButtonClicked()
+{
+	if (MultiplayerSessionsSubsystem)
+	{
+		MultiplayerSessionsSubsystem->CreateSession( NumPublicConnections, MatchType );
 	}
 }
 

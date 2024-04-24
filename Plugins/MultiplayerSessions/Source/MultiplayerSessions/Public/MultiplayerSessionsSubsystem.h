@@ -7,6 +7,21 @@
 #include "Subsystems/GameInstanceSubsystem.h"
 #include "MultiplayerSessionsSubsystem.generated.h"
 
+///
+/// Declaration of our own custom delegates for the Menu class to bind callbacks to
+///
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam( FMultiplayerOnCreateSessionComplete, bool, bWasSuccessful );
+
+DECLARE_MULTICAST_DELEGATE_TwoParams( FMultiplayerOnFindSessionsComplete,
+                                      const TArray<FOnlineSessionSearchResult>& SessionResults,
+                                      bool bWasSuccessful );
+
+DECLARE_MULTICAST_DELEGATE_OneParam( FMultiplayerOnJoinSessionComplete, EOnJoinSessionCompleteResult::Type Result );
+
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam( FMultiplayerOnStartSessionComplete, bool, bWasSuccessful );
+
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam( FMultiplayerOnDestroySessionComplete, bool, bWasSuccessful );
+
 /**
  * Handles sessions, working besides GameInstance
  */
@@ -43,17 +58,26 @@ public:
 	void FindSessions( int32 MaxSearchResults );
 
 	/**
-	 * Accesses subsystem adn calls its join session function
+	 * Accesses subsystem and calls its join session function
 	 * 
 	 * @param SessionSearchResult Found session to join
 	 */
 	void JoinSession( const FOnlineSessionSearchResult& SessionSearchResult );
 
-	/** Accesses subsystem adn calls its start function */
+	/** Accesses subsystem and calls its start function */
 	void StartSession();
 
-	/** Accesses subsystem adn calls its destroy function */
+	/** Accesses subsystem and calls its destroy function */
 	void DestroySession();
+
+	///
+	/// Our own custom delegates for the Menu class to bind callbacks to
+	///
+	FMultiplayerOnCreateSessionComplete MultiplayerOnCreateSessionComplete;
+	FMultiplayerOnFindSessionsComplete MultiplayerOnFindSessionsComplete;
+	FMultiplayerOnJoinSessionComplete MultiplayerOnJoinSessionComplete;
+	FMultiplayerOnStartSessionComplete MultiplayerOnStartSessionComplete;
+	FMultiplayerOnDestroySessionComplete MultiplayerOnDestroySessionComplete;
 
 protected:
 	///
