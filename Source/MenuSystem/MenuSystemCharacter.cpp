@@ -64,6 +64,7 @@ AMenuSystemCharacter::AMenuSystemCharacter()
 	{
 		OnlineSessionInterface = OnlineSubsystem->GetSessionInterface();
 
+		/*
 		if (GEngine)
 		{
 			GEngine->AddOnScreenDebugMessage( -1,
@@ -73,6 +74,7 @@ AMenuSystemCharacter::AMenuSystemCharacter()
 				                                  TEXT( "Found subsystem %s" ),
 				                                  *OnlineSubsystem->GetSubsystemName().ToString() ) );
 		}
+		*/
 	}
 }
 
