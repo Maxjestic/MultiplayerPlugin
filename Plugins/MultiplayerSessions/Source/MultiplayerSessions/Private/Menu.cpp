@@ -5,6 +5,7 @@
 
 #include "Components/Button.h"
 #include "MultiplayerSessionsSubsystem.h"
+#include "OnlineSessionSettings.h"
 
 void UMenu::MenuSetup( const int32 InNumOfPublicConnections, const FString InMatchType )
 {
@@ -71,13 +72,13 @@ void UMenu::NativeDestruct()
 
 void UMenu::OnCreateSession( bool bWasSuccessful )
 {
-	if(bWasSuccessful)
+	if (bWasSuccessful)
 	{
 		if (GEngine)
 		{
 			GEngine->AddOnScreenDebugMessage( -1, 15.f, FColor::Yellow, FString( TEXT( "Session created successfully!" ) ) );
 		}
-		
+
 		if (UWorld* World = GetWorld())
 		{
 			World->ServerTravel( "/Game/ThirdPerson/Maps/Lobby?listen" );
@@ -94,10 +95,39 @@ void UMenu::OnCreateSession( bool bWasSuccessful )
 
 void UMenu::OnFindSessions( const TArray<FOnlineSessionSearchResult>& SessionResults, bool bWasSuccessful )
 {
+	if (!MultiplayerSessionsSubsystem)
+	{
+		return;
+	}
+
+	for (FOnlineSessionSearchResult Result : SessionResults)
+	{
+		FString SettingsValue;
+		Result.Session.SessionSettings.Get( FName( "MatchType" ), SettingsValue );
+		if (SettingsValue == MatchType)
+		{
+			MultiplayerSessionsSubsystem->JoinSession( Result );
+			return;
+		}
+	}
 }
 
 void UMenu::OnJoinSession( EOnJoinSessionCompleteResult::Type Result )
 {
+	if (const IOnlineSubsystem* Subsystem = IOnlineSubsystem::Get())
+	{
+		IOnlineSessionPtr SessionInterface = Subsystem->GetSessionInterface();
+		if (SessionInterface.IsValid())
+		{
+			FString Address;
+			SessionInterface->GetResolvedConnectString( NAME_GameSession, Address );
+
+			if (APlayerController* PlayerController = GetGameInstance()->GetFirstLocalPlayerController())
+			{
+				PlayerController->ClientTravel( Address, TRAVEL_Absolute );
+			}
+		}
+	}
 }
 
 void UMenu::OnStartSession( bool bWasSuccessful )
@@ -118,9 +148,9 @@ void UMenu::HostButtonClicked()
 
 void UMenu::JoinButtonClicked()
 {
-	if (GEngine)
+	if (MultiplayerSessionsSubsystem)
 	{
-		GEngine->AddOnScreenDebugMessage( -1, 15.f, FColor::Yellow, FString( TEXT( "Join button clicked" ) ) );
+		MultiplayerSessionsSubsystem->FindSessions( 10000 );
 	}
 }
 

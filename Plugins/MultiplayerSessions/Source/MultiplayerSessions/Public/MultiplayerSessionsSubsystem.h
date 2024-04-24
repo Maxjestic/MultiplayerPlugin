@@ -94,8 +94,11 @@ private:
 	/** Used to handle sessions */
 	IOnlineSessionPtr SessionInterface;
 
-	/** Session setting created in recent session creation */
+	/** Session setting created in most recent session creation */
 	TSharedPtr<FOnlineSessionSettings> LastSessionSettings;
+
+	/** Session search created in most recent session finding */
+	TSharedPtr<FOnlineSessionSearch> LastSessionSearch;
 
 	///
 	/// To add to Online Session Interface delegate list.
