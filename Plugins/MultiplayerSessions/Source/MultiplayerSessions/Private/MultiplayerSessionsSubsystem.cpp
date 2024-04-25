@@ -66,9 +66,9 @@ void UMultiplayerSessionsSubsystem::FindSessions( int32 MaxSearchResults )
 	LastSessionSearch->MaxSearchResults = MaxSearchResults;
 	LastSessionSearch->bIsLanQuery = IOnlineSubsystem::Get()->GetSubsystemName() == "NULL";
 	LastSessionSearch->QuerySettings.Set( SEARCH_PRESENCE, true, EOnlineComparisonOp::Equals );
-	
+
 	const ULocalPlayer* LocalPlayer = GetWorld()->GetFirstLocalPlayerFromController();
-	if(!SessionInterface->FindSessions( *LocalPlayer->GetPreferredUniqueNetId(), LastSessionSearch.ToSharedRef() ))
+	if (!SessionInterface->FindSessions( *LocalPlayer->GetPreferredUniqueNetId(), LastSessionSearch.ToSharedRef() ))
 	{
 		SessionInterface->ClearOnFindSessionsCompleteDelegate_Handle( FindSessionsCompleteDelegateHandle );
 		MultiplayerOnFindSessionsComplete.Broadcast( TArray<FOnlineSessionSearchResult>(), false );
@@ -79,22 +79,34 @@ void UMultiplayerSessionsSubsystem::JoinSession( const FOnlineSessionSearchResul
 {
 	if (!SessionInterface.IsValid())
 	{
-		MultiplayerOnJoinSessionComplete.Broadcast( EOnJoinSessionCompleteResult::UnknownError );
+		MultiplayerOnJoinSessionComplete.Broadcast( EOnJoinSessionCompleteResult::UnknownError, FString("") );
 		return;
 	}
 
 	JoinSessionCompleteDelegateHandle = SessionInterface->AddOnJoinSessionCompleteDelegate_Handle( JoinSessionCompleteDelegate );
 
 	const ULocalPlayer* LocalPlayer = GetWorld()->GetFirstLocalPlayerFromController();
-	if(!SessionInterface->JoinSession( *LocalPlayer->GetPreferredUniqueNetId(), NAME_GameSession, SessionSearchResult))
+	if (!SessionInterface->JoinSession( *LocalPlayer->GetPreferredUniqueNetId(), NAME_GameSession, SessionSearchResult ))
 	{
 		SessionInterface->ClearOnJoinSessionCompleteDelegate_Handle( JoinSessionCompleteDelegateHandle );
-		MultiplayerOnJoinSessionComplete.Broadcast(EOnJoinSessionCompleteResult::UnknownError);
+		MultiplayerOnJoinSessionComplete.Broadcast( EOnJoinSessionCompleteResult::UnknownError, FString("") );
 	}
 }
 
 void UMultiplayerSessionsSubsystem::StartSession()
 {
+	if (!SessionInterface.IsValid())
+	{
+		return;
+	}
+
+	StartSessionCompleteDelegateHandle = SessionInterface->AddOnStartSessionCompleteDelegate_Handle( StartSessionCompleteDelegate );
+
+	if (!SessionInterface->StartSession( NAME_GameSession ))
+	{
+		SessionInterface->ClearOnStartSessionCompleteDelegate_Handle( StartSessionCompleteDelegateHandle );
+		MultiplayerOnStartSessionComplete.Broadcast( false );
+	}
 }
 
 void UMultiplayerSessionsSubsystem::DestroySession()
@@ -113,32 +125,40 @@ void UMultiplayerSessionsSubsystem::OnCreateSessionComplete( FName SessionName, 
 
 void UMultiplayerSessionsSubsystem::OnFindSessionsComplete( bool bWasSuccessful )
 {
-	if(SessionInterface)
+	if (SessionInterface)
 	{
 		SessionInterface->ClearOnFindSessionsCompleteDelegate_Handle( FindSessionsCompleteDelegateHandle );
 	}
 
-	if(LastSessionSearch->SearchResults.Num() <= 0)
+	if (LastSessionSearch->SearchResults.Num() <= 0)
 	{
 		MultiplayerOnFindSessionsComplete.Broadcast( TArray<FOnlineSessionSearchResult>(), false );
 		return;
 	}
-	
+
 	MultiplayerOnFindSessionsComplete.Broadcast( LastSessionSearch->SearchResults, bWasSuccessful );
 }
 
 void UMultiplayerSessionsSubsystem::OnJoinSessionComplete( FName SessionName, EOnJoinSessionCompleteResult::Type Result )
 {
-	if(SessionInterface)
+	FString Address("");
+	if (SessionInterface)
 	{
 		SessionInterface->ClearOnJoinSessionCompleteDelegate_Handle( JoinSessionCompleteDelegateHandle );
+		SessionInterface->GetResolvedConnectString( NAME_GameSession, Address );
 	}
-
-	MultiplayerOnJoinSessionComplete.Broadcast( Result );
+	
+	MultiplayerOnJoinSessionComplete.Broadcast( Result, Address );
 }
 
 void UMultiplayerSessionsSubsystem::OnStartSessionComplete( FName SessionName, bool bWasSuccessful )
 {
+	if(SessionInterface)
+	{
+		SessionInterface->ClearOnStartSessionCompleteDelegate_Handle( StartSessionCompleteDelegateHandle );
+	}
+
+	MultiplayerOnStartSessionComplete.Broadcast( bWasSuccessful );
 }
 
 void UMultiplayerSessionsSubsystem::OnDestroySessionComplete( FName SessionName, bool bWasSuccessful )

@@ -112,26 +112,28 @@ void UMenu::OnFindSessions( const TArray<FOnlineSessionSearchResult>& SessionRes
 	}
 }
 
-void UMenu::OnJoinSession( EOnJoinSessionCompleteResult::Type Result )
+void UMenu::OnJoinSession( EOnJoinSessionCompleteResult::Type Result, const FString& Address )
 {
-	if (const IOnlineSubsystem* Subsystem = IOnlineSubsystem::Get())
+	if (APlayerController* PlayerController = GetGameInstance()->GetFirstLocalPlayerController())
 	{
-		IOnlineSessionPtr SessionInterface = Subsystem->GetSessionInterface();
-		if (SessionInterface.IsValid())
-		{
-			FString Address;
-			SessionInterface->GetResolvedConnectString( NAME_GameSession, Address );
-
-			if (APlayerController* PlayerController = GetGameInstance()->GetFirstLocalPlayerController())
-			{
-				PlayerController->ClientTravel( Address, TRAVEL_Absolute );
-			}
-		}
+		PlayerController->ClientTravel( Address, TRAVEL_Absolute );
 	}
 }
 
 void UMenu::OnStartSession( bool bWasSuccessful )
 {
+	if (bWasSuccessful)
+	{
+		if (GEngine)
+		{
+			GEngine->AddOnScreenDebugMessage( -1, 15.f, FColor::Red, FString( TEXT( "Session started successfully!" ) ) );
+		}
+		return;
+	}
+	if (GEngine)
+	{
+		GEngine->AddOnScreenDebugMessage( -1, 15.f, FColor::Red, FString( TEXT( "Failed to start session!" ) ) );
+	}
 }
 
 void UMenu::OnDestroySession( bool bWasSuccessful )

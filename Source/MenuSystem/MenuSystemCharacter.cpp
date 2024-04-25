@@ -60,7 +60,7 @@ AMenuSystemCharacter::AMenuSystemCharacter()
 	// Note: The skeletal mesh and anim blueprint references on the Mesh component (inherited from Character) 
 	// are set in the derived blueprint asset named ThirdPersonCharacter (to avoid direct content references in C++)
 
-	if (IOnlineSubsystem* OnlineSubsystem = IOnlineSubsystem::Get())
+	if (const IOnlineSubsystem* OnlineSubsystem = IOnlineSubsystem::Get())
 	{
 		OnlineSessionInterface = OnlineSubsystem->GetSessionInterface();
 
@@ -84,7 +84,7 @@ void AMenuSystemCharacter::BeginPlay()
 	Super::BeginPlay();
 
 	//Add Input Mapping Context
-	if (APlayerController* PlayerController = Cast<APlayerController>( Controller ))
+	if (const APlayerController* PlayerController = Cast<APlayerController>( Controller ))
 	{
 		if (UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(
 			PlayerController->GetLocalPlayer() ))

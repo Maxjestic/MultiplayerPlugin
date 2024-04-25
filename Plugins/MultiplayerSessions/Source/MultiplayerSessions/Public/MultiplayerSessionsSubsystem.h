@@ -16,7 +16,7 @@ DECLARE_MULTICAST_DELEGATE_TwoParams( FMultiplayerOnFindSessionsComplete,
                                       const TArray<FOnlineSessionSearchResult>& SessionResults,
                                       bool bWasSuccessful );
 
-DECLARE_MULTICAST_DELEGATE_OneParam( FMultiplayerOnJoinSessionComplete, EOnJoinSessionCompleteResult::Type Result );
+DECLARE_MULTICAST_DELEGATE_TwoParams( FMultiplayerOnJoinSessionComplete, EOnJoinSessionCompleteResult::Type Result, const FString& Address );
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam( FMultiplayerOnStartSessionComplete, bool, bWasSuccessful );
 
