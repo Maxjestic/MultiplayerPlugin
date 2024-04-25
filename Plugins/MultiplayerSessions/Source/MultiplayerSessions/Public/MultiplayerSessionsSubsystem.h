@@ -48,14 +48,14 @@ public:
 	 * @param NumPublicConnections Number of players that can join the session
 	 * @param MatchType Match type that will be handled by session
 	 */
-	void CreateSession( int32 NumPublicConnections, FString MatchType );
+	void CreateSession( const int32 NumPublicConnections, FString MatchType );
 
 	/**
 	 * Accesses subsystem and calls its find sessions function
 	 * 
 	 * @param MaxSearchResults Search limit
 	 */
-	void FindSessions( int32 MaxSearchResults );
+	void FindSessions( const int32 MaxSearchResults );
 
 	/**
 	 * Accesses subsystem and calls its join session function
@@ -84,11 +84,11 @@ protected:
 	/// Internal callbacks for the delegates we'll add to the Online Session Interface list.
 	/// These don't need to be called outside this class.
 	///
-	void OnCreateSessionComplete( FName SessionName, bool bWasSuccessful );
-	void OnFindSessionsComplete( bool bWasSuccessful );
+	void OnCreateSessionComplete( FName SessionName, const bool bWasSuccessful );
+	void OnFindSessionsComplete( const bool bWasSuccessful );
 	void OnJoinSessionComplete( FName SessionName, EOnJoinSessionCompleteResult::Type Result );
-	void OnStartSessionComplete( FName SessionName, bool bWasSuccessful );
-	void OnDestroySessionComplete( FName SessionName, bool bWasSuccessful );
+	void OnStartSessionComplete( FName SessionName, const bool bWasSuccessful );
+	void OnDestroySessionComplete( FName SessionName, const bool bWasSuccessful );
 
 private:
 	/** Used to handle sessions */

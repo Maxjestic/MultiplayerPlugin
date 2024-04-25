@@ -37,15 +37,16 @@ protected:
 	/// Callbacks for the custom delegates on the MultiplayerSessionsSubsystem
 	///
 	UFUNCTION()
-	void OnCreateSession( bool bWasSuccessful );
-	void OnFindSessions( const TArray<FOnlineSessionSearchResult>& SessionResults, bool bWasSuccessful );
-	void OnJoinSession( EOnJoinSessionCompleteResult::Type Result, const FString& Address );
+	void OnCreateSession( const bool bWasSuccessful );
+	
+	void OnFindSessions( const TArray<FOnlineSessionSearchResult>& SessionResults, bool bWasSuccessful ) const;
+	void OnJoinSession( const EOnJoinSessionCompleteResult::Type Result, const FString& Address ) const;
 
 	UFUNCTION()
-	void OnStartSession( bool bWasSuccessful );
+	void OnStartSession( const bool bWasSuccessful );
 
 	UFUNCTION()
-	void OnDestroySession( bool bWasSuccessful );
+	void OnDestroySession( const bool bWasSuccessful );
 
 private:
 	///

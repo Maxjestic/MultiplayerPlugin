@@ -71,7 +71,8 @@ void UMenu::NativeDestruct()
 	Super::NativeDestruct();
 }
 
-void UMenu::OnCreateSession( bool bWasSuccessful )
+// ReSharper disable once CppMemberFunctionMayBeConst, Callback to dynamic delegate
+void UMenu::OnCreateSession( const bool bWasSuccessful )
 {
 	if (bWasSuccessful)
 	{
@@ -95,7 +96,7 @@ void UMenu::OnCreateSession( bool bWasSuccessful )
 	}
 }
 
-void UMenu::OnFindSessions( const TArray<FOnlineSessionSearchResult>& SessionResults, bool bWasSuccessful )
+void UMenu::OnFindSessions( const TArray<FOnlineSessionSearchResult>& SessionResults, bool bWasSuccessful ) const
 {
 	if (!MultiplayerSessionsSubsystem)
 	{
@@ -116,7 +117,7 @@ void UMenu::OnFindSessions( const TArray<FOnlineSessionSearchResult>& SessionRes
 	Button_Join->SetIsEnabled( true );
 }
 
-void UMenu::OnJoinSession( EOnJoinSessionCompleteResult::Type Result, const FString& Address )
+void UMenu::OnJoinSession( const EOnJoinSessionCompleteResult::Type Result, const FString& Address ) const
 {
 	if (APlayerController* PlayerController = GetGameInstance()->GetFirstLocalPlayerController())
 	{
@@ -129,7 +130,8 @@ void UMenu::OnJoinSession( EOnJoinSessionCompleteResult::Type Result, const FStr
 	}
 }
 
-void UMenu::OnStartSession( bool bWasSuccessful )
+// ReSharper disable once CppMemberFunctionMayBeStatic, Callback to dynamic delegate
+void UMenu::OnStartSession( const bool bWasSuccessful )
 {
 	if (bWasSuccessful)
 	{
@@ -145,7 +147,8 @@ void UMenu::OnStartSession( bool bWasSuccessful )
 	}
 }
 
-void UMenu::OnDestroySession( bool bWasSuccessful )
+// ReSharper disable once CppMemberFunctionMayBeStatic, Callback to dynamic delegate
+void UMenu::OnDestroySession( const bool bWasSuccessful )
 {
 	if (bWasSuccessful)
 	{
@@ -161,6 +164,7 @@ void UMenu::OnDestroySession( bool bWasSuccessful )
 	}
 }
 
+// ReSharper disable once CppMemberFunctionMayBeConst, Callback to dynamic delegate
 void UMenu::HostButtonClicked()
 {
 	Button_Host->SetIsEnabled( false );
@@ -170,6 +174,7 @@ void UMenu::HostButtonClicked()
 	}
 }
 
+// ReSharper disable once CppMemberFunctionMayBeConst, Callback to dynamic delegate
 void UMenu::JoinButtonClicked()
 {
 	Button_Join->SetIsEnabled( false );

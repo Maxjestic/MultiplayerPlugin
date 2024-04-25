@@ -20,7 +20,7 @@ UMultiplayerSessionsSubsystem::UMultiplayerSessionsSubsystem()
 	}
 }
 
-void UMultiplayerSessionsSubsystem::CreateSession( int32 NumPublicConnections, FString MatchType )
+void UMultiplayerSessionsSubsystem::CreateSession( const int32 NumPublicConnections, FString MatchType )
 {
 	if (!SessionInterface.IsValid())
 	{
@@ -57,7 +57,7 @@ void UMultiplayerSessionsSubsystem::CreateSession( int32 NumPublicConnections, F
 	}
 }
 
-void UMultiplayerSessionsSubsystem::FindSessions( int32 MaxSearchResults )
+void UMultiplayerSessionsSubsystem::FindSessions( const int32 MaxSearchResults )
 {
 	if (!SessionInterface.IsValid())
 	{
@@ -129,7 +129,7 @@ void UMultiplayerSessionsSubsystem::DestroySession()
 	}
 }
 
-void UMultiplayerSessionsSubsystem::OnCreateSessionComplete( FName SessionName, bool bWasSuccessful )
+void UMultiplayerSessionsSubsystem::OnCreateSessionComplete( FName SessionName, const bool bWasSuccessful )
 {
 	if (SessionInterface)
 	{
@@ -139,7 +139,7 @@ void UMultiplayerSessionsSubsystem::OnCreateSessionComplete( FName SessionName, 
 	MultiplayerOnCreateSessionComplete.Broadcast( bWasSuccessful );
 }
 
-void UMultiplayerSessionsSubsystem::OnFindSessionsComplete( bool bWasSuccessful )
+void UMultiplayerSessionsSubsystem::OnFindSessionsComplete( const bool bWasSuccessful )
 {
 	if (SessionInterface)
 	{
@@ -167,7 +167,7 @@ void UMultiplayerSessionsSubsystem::OnJoinSessionComplete( FName SessionName, EO
 	MultiplayerOnJoinSessionComplete.Broadcast( Result, Address );
 }
 
-void UMultiplayerSessionsSubsystem::OnStartSessionComplete( FName SessionName, bool bWasSuccessful )
+void UMultiplayerSessionsSubsystem::OnStartSessionComplete( FName SessionName, const bool bWasSuccessful )
 {
 	if (SessionInterface)
 	{
@@ -177,7 +177,7 @@ void UMultiplayerSessionsSubsystem::OnStartSessionComplete( FName SessionName, b
 	MultiplayerOnStartSessionComplete.Broadcast( bWasSuccessful );
 }
 
-void UMultiplayerSessionsSubsystem::OnDestroySessionComplete( FName SessionName, bool bWasSuccessful )
+void UMultiplayerSessionsSubsystem::OnDestroySessionComplete( FName SessionName, const bool bWasSuccessful )
 {
 	if (SessionInterface)
 	{
