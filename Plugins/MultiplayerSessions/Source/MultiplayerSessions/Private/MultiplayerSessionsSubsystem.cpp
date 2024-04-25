@@ -89,7 +89,7 @@ void UMultiplayerSessionsSubsystem::JoinSession( const FOnlineSessionSearchResul
 	if (!SessionInterface->JoinSession( *LocalPlayer->GetPreferredUniqueNetId(), NAME_GameSession, SessionSearchResult ))
 	{
 		SessionInterface->ClearOnJoinSessionCompleteDelegate_Handle( JoinSessionCompleteDelegateHandle );
-		MultiplayerOnJoinSessionComplete.Broadcast( EOnJoinSessionCompleteResult::UnknownError, FString("") );
+		MultiplayerOnJoinSessionComplete.Broadcast( EOnJoinSessionCompleteResult::UnknownError, FString(TEXT("")) );
 	}
 }
 
@@ -141,7 +141,7 @@ void UMultiplayerSessionsSubsystem::OnFindSessionsComplete( bool bWasSuccessful 
 
 void UMultiplayerSessionsSubsystem::OnJoinSessionComplete( FName SessionName, EOnJoinSessionCompleteResult::Type Result )
 {
-	FString Address("");
+	FString Address{TEXT("")};
 	if (SessionInterface)
 	{
 		SessionInterface->ClearOnJoinSessionCompleteDelegate_Handle( JoinSessionCompleteDelegateHandle );

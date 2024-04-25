@@ -7,8 +7,9 @@
 #include "MultiplayerSessionsSubsystem.h"
 #include "OnlineSessionSettings.h"
 
-void UMenu::MenuSetup( const int32 InNumOfPublicConnections, const FString InMatchType )
+void UMenu::MenuSetup( const int32 InNumOfPublicConnections, const FString InMatchType, const FString InPathToLobby )
 {
+	PathToLobby = FString::Printf( TEXT("%s?listen"), *InPathToLobby );
 	NumPublicConnections = InNumOfPublicConnections;
 	MatchType = InMatchType;
 
@@ -81,7 +82,7 @@ void UMenu::OnCreateSession( bool bWasSuccessful )
 
 		if (UWorld* World = GetWorld())
 		{
-			World->ServerTravel( "/Game/ThirdPerson/Maps/Lobby?listen" );
+			World->ServerTravel( PathToLobby );
 		}
 	}
 	else

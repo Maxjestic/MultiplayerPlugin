@@ -24,7 +24,8 @@ class MULTIPLAYERSESSIONS_API UMenu : public UUserWidget
 public:
 	/** Adds widget to viewport, sets properties */
 	UFUNCTION( BlueprintCallable )
-	void MenuSetup( const int32 InNumOfPublicConnections = 4, const FString InMatchType = FString( TEXT( "FreeForAll" ) ) );
+	void MenuSetup( const int32 InNumOfPublicConnections = 4, const FString InMatchType = FString( TEXT( "FreeForAll" ) ),
+	                const FString InPathToLobby = FString( TEXT( "/Game/ThirdPerson/Maps/Lobby" ) ) );
 
 protected:
 	//~ Begin UUserWidget Interface
@@ -39,13 +40,12 @@ protected:
 	void OnCreateSession( bool bWasSuccessful );
 	void OnFindSessions( const TArray<FOnlineSessionSearchResult>& SessionResults, bool bWasSuccessful );
 	void OnJoinSession( EOnJoinSessionCompleteResult::Type Result, const FString& Address );
-	
+
 	UFUNCTION()
 	void OnStartSession( bool bWasSuccessful );
-	
+
 	UFUNCTION()
 	void OnDestroySession( bool bWasSuccessful );
-	
 
 private:
 	///
@@ -75,5 +75,10 @@ private:
 
 	/** Number of maximum player connections when creating an online session */
 	int32 NumPublicConnections = 4;
+
+	/** Match type for a session */
 	FString MatchType = TEXT( "FreeForAll" );
+
+	/** Path to lobby map file  */
+	FString PathToLobby{ TEXT( "" ) };
 };
