@@ -9,7 +9,7 @@
 
 void UMenu::MenuSetup( const int32 InNumOfPublicConnections, const FString InMatchType, const FString InPathToLobby )
 {
-	PathToLobby = FString::Printf( TEXT("%s?listen"), *InPathToLobby );
+	PathToLobby = FString::Printf( TEXT( "%s?listen" ), *InPathToLobby );
 	NumPublicConnections = InNumOfPublicConnections;
 	MatchType = InMatchType;
 
@@ -91,6 +91,7 @@ void UMenu::OnCreateSession( bool bWasSuccessful )
 		{
 			GEngine->AddOnScreenDebugMessage( -1, 15.f, FColor::Red, FString( TEXT( "Failed to create session!" ) ) );
 		}
+		Button_Host->SetIsEnabled( true );
 	}
 }
 
@@ -111,6 +112,8 @@ void UMenu::OnFindSessions( const TArray<FOnlineSessionSearchResult>& SessionRes
 			return;
 		}
 	}
+
+	Button_Join->SetIsEnabled( true );
 }
 
 void UMenu::OnJoinSession( EOnJoinSessionCompleteResult::Type Result, const FString& Address )
@@ -118,6 +121,11 @@ void UMenu::OnJoinSession( EOnJoinSessionCompleteResult::Type Result, const FStr
 	if (APlayerController* PlayerController = GetGameInstance()->GetFirstLocalPlayerController())
 	{
 		PlayerController->ClientTravel( Address, TRAVEL_Absolute );
+	}
+
+	if (Result != EOnJoinSessionCompleteResult::Success)
+	{
+		Button_Join->SetIsEnabled( true );
 	}
 }
 
@@ -139,10 +147,23 @@ void UMenu::OnStartSession( bool bWasSuccessful )
 
 void UMenu::OnDestroySession( bool bWasSuccessful )
 {
+	if (bWasSuccessful)
+	{
+		if (GEngine)
+		{
+			GEngine->AddOnScreenDebugMessage( -1, 15.f, FColor::Red, FString( TEXT( "Session destroyed successfully!" ) ) );
+		}
+		return;
+	}
+	if (GEngine)
+	{
+		GEngine->AddOnScreenDebugMessage( -1, 15.f, FColor::Red, FString( TEXT( "Failed to destroy session!" ) ) );
+	}
 }
 
 void UMenu::HostButtonClicked()
 {
+	Button_Host->SetIsEnabled( false );
 	if (MultiplayerSessionsSubsystem)
 	{
 		MultiplayerSessionsSubsystem->CreateSession( NumPublicConnections, MatchType );
@@ -151,6 +172,7 @@ void UMenu::HostButtonClicked()
 
 void UMenu::JoinButtonClicked()
 {
+	Button_Join->SetIsEnabled( false );
 	if (MultiplayerSessionsSubsystem)
 	{
 		MultiplayerSessionsSubsystem->FindSessions( 10000 );

@@ -118,4 +118,13 @@ private:
 	FDelegateHandle JoinSessionCompleteDelegateHandle;
 	FDelegateHandle StartSessionCompleteDelegateHandle;
 	FDelegateHandle DestroySessionCompleteDelegateHandle;
+
+	/** Indicates if new session should be created after destroying one */
+	bool bCreateSessionOnDestroy = false;
+
+	/** Most recent number of public connections used to create session that failed */
+	int32 LastNumPublicConnections = 4;
+
+	/** Most recent match type used to create session that failed */
+	FString LastMatchType;
 };
