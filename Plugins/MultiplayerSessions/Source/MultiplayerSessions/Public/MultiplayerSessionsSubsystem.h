@@ -91,6 +91,9 @@ protected:
 	void OnDestroySessionComplete( FName SessionName, const bool bWasSuccessful );
 
 private:
+	/** Check if session interface is initialized and valid */
+	bool IsValidSessionInterface();
+	
 	/** Used to handle sessions */
 	IOnlineSessionPtr SessionInterface;
 
